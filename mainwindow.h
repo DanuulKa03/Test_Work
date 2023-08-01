@@ -7,6 +7,7 @@
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
+#include <QFileDialog>
 
 
 class MainWindow : public QMainWindow
@@ -19,6 +20,8 @@ public:
 
 private:
     QPushButton* selectFile;
+    QPushButton* getInformationProgramm;
+    QPushButton* converterTextToBinary;
 
     QTextEdit* conclusion;
 
@@ -34,10 +37,16 @@ private:
 
     bool transformation();
 
+    QString getFileName();
+
     QLabel* labOptions;
     QLabel* labFileСount;
     QLabel* labWidth;
     QLabel* labDepth;
+
+private slots:
+    void buttonClickFile();
+    void buttonClickInfomation();
 
 };
 #endif // MAINWINDOW_H
