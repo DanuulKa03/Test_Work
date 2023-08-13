@@ -9,6 +9,7 @@
 #include <QLineEdit>
 #include <QFileDialog>
 
+#include "converterwindow.h"
 
 class MainWindow : public QMainWindow
 {
@@ -44,9 +45,12 @@ private:
     QLabel* labWidth;
     QLabel* labDepth;
 
+    ConverterWindow* converterForm;
+
 private slots:
     void buttonClickFile();
     void buttonClickInfomation();
+    void buttonClickOpenConverterForm();
 
 };
 #endif // MAINWINDOW_H

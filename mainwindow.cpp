@@ -98,4 +98,3 @@ void MainWindow::buttonClickOpenConverterForm()
     }
     converterForm->show();
 }
-

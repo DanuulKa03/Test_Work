@@ -1,14 +1,37 @@
 #ifndef CONVERTERWINDOW_H
 #define CONVERTERWINDOW_H
 
+#include <QLabel>
+#include <QLineEdit>
+#include <QMainWindow>
+#include <QPushButton>
+#include <QVBoxLayout>
+#include <QFileDialog>
+#include <QMessageBox>
 
-class converterwindow : public QMainWindow
+
+class ConverterWindow : public QMainWindow
 {
     Q_OBJECT
 public:
-    explicit converterwindow(QWidget *parent = nullptr);
+    explicit ConverterWindow(QWidget *parent = nullptr);
 
-signals:
+private:
+    QPushButton* btnConverterTextToBinary;
+
+    QLabel* labText;
+
+    QLineEdit* leText;
+
+    QVBoxLayout* main;
+
+    QHBoxLayout* assistantMain;
+
+    void memoryAllocation();
+
+private slots:
+
+    void saveFileToBinary();
 
 };
 
