@@ -38,8 +38,6 @@ private:
 
     bool transformation();
 
-    QString getFileName();
-
     QLabel* labOptions;
     QLabel* labFileСount;
     QLabel* labWidth;

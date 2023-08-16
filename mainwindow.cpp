@@ -65,14 +65,80 @@ void MainWindow::memoryAllocation()
 
 bool MainWindow::transformation()
 {
-    getFileName();
-    return false;
-}
+    bool flag = true;
 
-QString MainWindow::getFileName()
-{
-    return QFileDialog::getOpenFileName(this,
-        tr("Выбор файла"), "", tr("Бинарный файл (*.bin)"));
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Выбор файла"), "", "");
+
+    QFile initialFile(fileName);
+
+    if(initialFile.open(QIODevice::ReadOnly))
+    {
+        QByteArray contents = initialFile.readAll();
+
+        for (int fileNumber = 0; fileNumber < leFileCount->text().toInt(); fileNumber++)
+        {
+            QFile finalFile("abs" + QString::number(fileNumber+1) + ".mif");
+            if(finalFile.open(QIODevice::WriteOnly | QIODevice::Text))
+            {
+                conclusion->append("Создание файла " + finalFile.fileName() + ".");
+                QTextStream stream(&finalFile);
+
+                stream << "WIDTH = " + leWidth->text() + ";\n";
+                stream << "DEPTH = " + leDepth->text() + ";\n\n";
+
+                stream << "ADDRESS_RADIX=HEX;\n";
+                stream << "DATA_RADIX=HEX;\n\n";
+
+                stream << "CONTENT BEGIN\n";
+
+                // Пометка: Используем переменную j для контроля индекса в QByteArray.
+                // Логика следующая: длину WIDTH делим на 8, чтобы получить шаг, с которым будем записывать данные.
+                // Этот алгоритм гарантирует поочередное заполнение файлов, что может показаться излишне сложным.
+                // Рассмотрим возможность упрощения алгоритма на будущем этапе разработки.
+                int widthBytes = leWidth->text().toInt() / 8;
+                for (int wordNumber = 0, indexContents = fileNumber * widthBytes; wordNumber < leDepth->text().toInt(); ++wordNumber)
+                {
+                    stream << "    " + QString::number(wordNumber, 16).toUpper() + ":";
+
+                    //Что происходит дальше? Я буду считывать данные по байтово, чтобы отслеживать недостающие байты
+                    for (int var = 0; var < widthBytes; ++var, ++indexContents)
+                    {
+                        if ( contents.size() <= indexContents ) stream << "FF";
+                        else stream << contents.sliced(indexContents,1).toHex().toUpper();
+                    }
+
+                    stream << ";\n";
+                    //Тут мы отслеживаем, сколько байтов нужно пропустить, в зависимости кокое кол-во файлов указано
+                    //Мы отнимаем "-1" от leFileCount->text().toInt(), чтобы программа не пропускала свои нужные ей байты
+                    if (leFileCount->text().toInt() > 1)
+                    {
+                        indexContents += widthBytes * (leFileCount->text().toInt() - 1);
+                    }
+                }
+
+                stream << "END;";
+
+                conclusion->append("Файл " + finalFile.fileName() + " создан.\n");
+                finalFile.close();
+            }
+            else
+            {
+                conclusion->append("Произошла ошибка при создании файла " + finalFile.fileName());
+                finalFile.close();
+            }
+
+        }
+    }
+    else
+    {
+        conclusion->append("Произошла ошибка при открытии файла " + initialFile.fileName());
+        initialFile.close();
+        return false;
+    }
+
+    initialFile.close();
+    return true;
+
 }
 
 void MainWindow::buttonClickFile()

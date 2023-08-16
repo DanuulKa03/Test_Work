@@ -65,7 +65,7 @@ void ConverterWindow::saveFileToBinary()
                 msgBox.critical(0, "Произошла ошибка", "Произошла ошибка сохранения файла, попробуйте в другой раз.");
             }
         }
-
+        file.close();
         close();
     }
 }
