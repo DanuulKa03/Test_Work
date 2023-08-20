@@ -63,7 +63,7 @@ void MainWindow::memoryAllocation()
 }
 
 
-bool MainWindow::transformation()
+/*bool MainWindow::transformation()
 {
     bool flag = true;
 
@@ -139,12 +139,126 @@ bool MainWindow::transformation()
     initialFile.close();
     return true;
 
+}*/
+
+bool MainWindow::transformation()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Выбор файла"), "", "");
+
+    QFile mainFile(fileName);
+
+    if(mainFile.open(QIODevice::ReadOnly))
+    {
+        QDataStream dat_stream(&mainFile);
+        for (int fileNumber = 0; fileNumber < leFileCount->text().toInt(); fileNumber++)
+        {
+            QFile intermediateFile("abs" + QString::number(fileNumber+1) + ".mif");
+            if(intermediateFile.open(QIODevice::WriteOnly | QIODevice::Text))
+            {
+                fileCompletion(dat_stream, intermediateFile, fileNumber);
+            }
+            else
+            {
+                QMessageBox msgBox;
+                msgBox.critical(0, "Произошла ошибка", "Произошла ошибка сохранения файла, попробуйте в другой раз.");
+            }
+            intermediateFile.close();
+        }
+        mainFile.close();
+        return true;
+    }
+    else
+    {
+        mainFile.close();
+        QMessageBox msgBox;
+        msgBox.critical(0, "Произошла ошибка", "Произошла ошибка открытия файла, попробуйте в другой раз.");
+        return false;
+    }
+}
+
+void MainWindow::checkPosStream(QDataStream &dat_stream, int fileNumber)
+{
+    if (dat_stream.device()->pos() != 0)
+    {
+        dat_stream.device()->seek(0);
+    }
+    if (fileNumber > 0)
+    {
+        dat_stream.skipRawData( (leWidth->text().toInt() / 8) * fileNumber );
+    }
+}
+
+void MainWindow::fileCompletion(QDataStream &dat_stream, QFile &intermediateFile, int fileNumber)
+{
+
+    int widthBytes = leWidth->text().toInt() / 8;
+
+    if (dat_stream.device()->pos() != 0)
+    {
+        dat_stream.device()->seek(0);
+    }
+    if (fileNumber > 0)
+    {
+        dat_stream.skipRawData(widthBytes * fileNumber);
+    }
+
+    conclusion->append("Создание файла " + intermediateFile.fileName() + ".");
+
+    QTextStream tex_stream(&intermediateFile);
+
+    tex_stream << "WIDTH = " + leWidth->text() + ";\n";
+    tex_stream << "DEPTH = " + leDepth->text() + ";\n\n";
+
+    tex_stream << "ADDRESS_RADIX=HEX;\n";
+    tex_stream << "DATA_RADIX=HEX;\n\n";
+
+    tex_stream << "CONTENT BEGIN\n";
+
+
+    for (int wordNumber = 0; wordNumber < leDepth->text().toInt(); ++wordNumber)
+    {
+        tex_stream << "    " + QString::number(wordNumber, 16).toUpper() + ":";
+
+        //Что происходит дальше? Я буду считывать данные по байтово, чтобы отслеживать недостающие байты
+        for (int var = 0; var < widthBytes; ++var)
+        {
+            if ( dat_stream.atEnd() )
+            {
+                tex_stream << "FF";
+            }
+            else
+            {
+                char letter;
+                dat_stream.readRawData(&letter, 1);
+                tex_stream << QString::number(letter, 16).toUpper();
+            }
+        }
+
+        tex_stream << ";\n";
+        //Тут мы отслеживаем, сколько байтов нужно пропустить, в зависимости кокое кол-во файлов указано
+        //Мы отнимаем "-1" от leFileCount->text().toInt(), чтобы программа не пропускала свои нужные ей байты
+        if (leFileCount->text().toInt() > 1 && !dat_stream.atEnd())
+        {
+            dat_stream.skipRawData(widthBytes * (leFileCount->text().toInt() - 1));
+        }
+    }
+
+    tex_stream << "END;";
+
+    conclusion->append("Файл " + intermediateFile.fileName() + " создан.\n");
+
 }
 
 void MainWindow::buttonClickFile()
 {
-    conclusion->append("Привет");
-    transformation();
+    if (transformation())
+    {
+        conclusion->append("Размер исходного файла идеально подходит для заполнения всех файлов.");
+    }
+    else
+    {
+        conclusion->append("Размер исходного файла недостаточен для заполнения всех файлов");
+    }
 }
 
 void MainWindow::buttonClickInfomation()

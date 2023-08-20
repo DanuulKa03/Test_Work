@@ -38,6 +38,9 @@ private:
 
     bool transformation();
 
+    void checkPosStream(QDataStream &dat_stream, int fileNumber);
+    void fileCompletion(QDataStream &dat_stream, QFile &intermediateFile, int fileNumber);
+
     QLabel* labOptions;
     QLabel* labFileСount;
     QLabel* labWidth;
