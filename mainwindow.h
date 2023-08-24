@@ -8,6 +8,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QFileDialog>
+#include <QIntValidator>
 
 #include "converterwindow.h"
 
@@ -30,16 +31,21 @@ private:
     QLineEdit* leWidth;
     QLineEdit* leDepth;
 
+    QIntValidator* intValidFile;
+    QIntValidator* intValidWidth;
+    QIntValidator* intValidDepth;
+
     QVBoxLayout* main;
     QHBoxLayout* layButton;
     QGridLayout* layOptions;
 
     void memoryAllocation();
+    bool dataChecking();
 
     bool transformation();
 
     void checkPosStream(QDataStream &dat_stream, int fileNumber);
-    void fileCompletion(QDataStream &dat_stream, QFile &intermediateFile, int fileNumber);
+    void fileCompletion(QDataStream &dat_stream, QFile &intermediateFile, int fileNumber, bool &flag);
 
     QLabel* labOptions;
     QLabel* labFileСount;
