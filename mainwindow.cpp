@@ -145,15 +145,15 @@ void MainWindow::fileCompletion(QDataStream &dat_stream, QFile &intermediateFile
     tex_stream << "WIDTH = " + leWidth->text() + ";\n";
     tex_stream << "DEPTH = " + leDepth->text() + ";\n\n";
 
-    tex_stream << "ADDRESS_RADIX=HEX;\n";
-    tex_stream << "DATA_RADIX=HEX;\n\n";
+    tex_stream << "ADDRESS_RADIX = HEX;\n";
+    tex_stream << "DATA_RADIX = HEX;\n\n";
 
     tex_stream << "CONTENT BEGIN\n";
 
 
     for (int wordNumber = 0; wordNumber < leDepth->text().toInt(); ++wordNumber)
     {
-        tex_stream << "    " + QString::number(wordNumber, 16).toUpper() + ":";
+        tex_stream << "    " + QString::number(wordNumber, 16).toUpper() + " : ";
 
         //Что происходит дальше? Я буду считывать данные по байтово, чтобы отслеживать недостающие байты
         for (int var = 0; var < widthBytes; ++var)
@@ -167,7 +167,7 @@ void MainWindow::fileCompletion(QDataStream &dat_stream, QFile &intermediateFile
             {
                 char letter;
                 dat_stream.readRawData(&letter, 1);
-                tex_stream << QString::number(letter, 16).toUpper();
+                tex_stream << QString::number(static_cast<quint8>(letter), 16).toUpper();
             }
         }
 
@@ -235,7 +235,7 @@ void MainWindow::buttonClickInfomation()
 
 void MainWindow::buttonClickOpenConverterForm()
 {
-    if (!converterForm)
+    if (converterForm == nullptr)
     {
         converterForm = new ConverterWindow(this);
         converterForm->setAttribute(Qt::WA_DeleteOnClose); // Установим атрибут, чтобы объект формы удалился при закрытии
