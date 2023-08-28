@@ -42,8 +42,9 @@ private:
     void memoryAllocation();
     bool dataChecking();
 
-    bool transformation();
+    bool transformation(QFile &mainFile);
 
+    QString pruningFileName(QFile &mainFile); //pruning - обрезка
     void checkPosStream(QDataStream &dat_stream, int fileNumber);
     void fileCompletion(QDataStream &dat_stream, QFile &intermediateFile, int fileNumber, bool &flag);
 

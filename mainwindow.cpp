@@ -75,40 +75,40 @@ bool MainWindow::dataChecking()
     return true;
 }
 
-bool MainWindow::transformation()
+bool MainWindow::transformation(QFile &mainFile)
 {
     bool flag = true;
 
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Выбор файла"), "", "");
+    QDataStream dat_stream(&mainFile);
 
-    QFile mainFile(fileName);
-
-    if(mainFile.open(QIODevice::ReadOnly))
+    QString strPruning = pruningFileName(mainFile);
+    for (int fileNumber = 0; fileNumber < leFileCount->text().toInt(); fileNumber++)
     {
-        QDataStream dat_stream(&mainFile);
-        for (int fileNumber = 0; fileNumber < leFileCount->text().toInt(); fileNumber++)
+        QFile intermediateFile(strPruning + QString::number(fileNumber+1) + ".mif");
+        if(intermediateFile.open(QIODevice::WriteOnly | QIODevice::Text))
         {
-            QFile intermediateFile("abs" + QString::number(fileNumber+1) + ".mif");
-            if(intermediateFile.open(QIODevice::WriteOnly | QIODevice::Text))
-            {
-                fileCompletion(dat_stream, intermediateFile, fileNumber, flag);
-            }
-            else
-            {
-                QMessageBox msgBox;
-                msgBox.critical(0, "Произошла ошибка", "Произошла ошибка сохранения файла, попробуйте в другой раз.");
-            }
-            intermediateFile.close();
+            fileCompletion(dat_stream, intermediateFile, fileNumber, flag);
         }
-        mainFile.close();
-        return flag;
+        else
+        {
+            QMessageBox msgBox;
+            msgBox.critical(0, "Произошла ошибка", "Произошла ошибка сохранения файла, попробуйте в другой раз.");
+        }
+        intermediateFile.close();
+    }
+
+    return flag;
+}
+
+QString MainWindow::pruningFileName(QFile &mainFile) //pruning - обрезка
+{
+    if ( mainFile.fileName().contains(".") )
+    {
+        return mainFile.fileName().first(mainFile.fileName().indexOf(".")).remove(0, mainFile.fileName().lastIndexOf("/") + 1 );
     }
     else
     {
-        mainFile.close();
-        QMessageBox msgBox;
-        msgBox.critical(0, "Произошла ошибка", "Произошла ошибка открытия файла, попробуйте в другой раз.");
-        return false;
+        return mainFile.fileName().remove(0, mainFile.fileName().lastIndexOf("/") + 1 );
     }
 }
 
@@ -190,15 +190,29 @@ void MainWindow::buttonClickFile()
 {
     if (dataChecking())
     {
+        QFile mainFile( QFileDialog::getOpenFileName(this, tr("Выбор файла"), "", "") );
 
-        if (transformation())
+        if(mainFile.open(QIODevice::ReadOnly))
         {
-            conclusion->append("Размер исходного файла идеально подходит для заполнения всех файлов.");
+
+            if (transformation(mainFile))
+            {
+                conclusion->append("Размер исходного файла идеально подходит для заполнения всех файлов.");
+            }
+            else
+            {
+                conclusion->append("Размер исходного файла недостаточен для заполнения всех файлов");
+            }
+
         }
         else
         {
-            conclusion->append("Размер исходного файла недостаточен для заполнения всех файлов");
+            QMessageBox msgBox;
+            msgBox.critical(0, "Произошла ошибка", "Выберите файл и нажмите открыть.");
         }
+
+
+        mainFile.close();
 
     }
     else
