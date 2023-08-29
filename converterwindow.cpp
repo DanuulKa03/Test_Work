@@ -43,29 +43,54 @@ void ConverterWindow::memoryAllocation()
     assistantMain = new QHBoxLayout(this);
 }
 
+bool ConverterWindow::dataChecking()
+{
+    if (leText->text() == "")
+    {
+        return false;
+    }
+    return true;
+}
+
 void ConverterWindow::saveFileToBinary()
 {
-    QString str = QFileDialog::getSaveFileName(0, "Save file", "", "");
+    if (dataChecking())
+    {
 
-    if (!str.isEmpty()) {
-        // Пользователь нажал кнопку "Сохранить"
+        QString str = QFileDialog::getSaveFileName(0, "Save file", "", "");
+
+        if (!str.isEmpty()) {
+            // Пользователь нажал кнопку "Сохранить"
 
 
-        QFile file(str);
-        if(file.open(QIODevice::WriteOnly))
-        {
-            QDataStream stream(&file);
-            stream.setVersion(QDataStream::Qt_6_4);
-
-            QByteArray stringBytes = leText->text().toUtf8();
-
-            if (stream.writeRawData(stringBytes.constData(), stringBytes.size()) == -1 )
+            QFile file(str);
+            if(file.open(QIODevice::WriteOnly))
             {
-                QMessageBox msgBox;
-                msgBox.critical(0, "Произошла ошибка", "Произошла ошибка сохранения файла, попробуйте в другой раз.");
+                QDataStream stream(&file);
+                stream.setVersion(QDataStream::Qt_6_4);
+
+                QByteArray stringBytes = leText->text().toUtf8();
+
+                if (stream.writeRawData(stringBytes.constData(), stringBytes.size()) == -1 )
+                {
+                    QMessageBox msgBox;
+                    msgBox.critical(0, "Произошла ошибка", "Произошла ошибка сохранения файла, попробуйте в другой раз.");
+                }
             }
+            file.close();
+            close();
         }
-        file.close();
-        close();
+        else
+        {
+            QMessageBox msgBox;
+            msgBox.critical(0, "Произошла ошибка", "Выберите место для сохранения. Потом нажмиет кнопку сохранить.");
+        }
     }
+    else
+    {
+        QMessageBox msgBox;
+        msgBox.warning(0, "Произошла ошибка", "Введите в поле TEXT, символы.");
+    }
+
+
 }

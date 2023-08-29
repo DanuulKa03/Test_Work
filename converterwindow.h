@@ -28,6 +28,7 @@ private:
     QHBoxLayout* assistantMain;
 
     void memoryAllocation();
+    bool dataChecking();
 
 private slots:
 
