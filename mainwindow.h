@@ -9,6 +9,7 @@
 #include <QLineEdit>
 #include <QFileDialog>
 #include <QIntValidator>
+#include <climits>
 
 #include "converterwindow.h"
 
@@ -40,6 +41,7 @@ private:
     QGridLayout* layOptions;
 
     void memoryAllocation();
+    void validatorSetup();
     bool dataChecking();
 
     bool transformation(QFile &mainFile);
@@ -60,5 +62,6 @@ private slots:
     void buttonClickInfomation();
     void buttonClickOpenConverterForm();
 
+//    void checkInput();
 };
 #endif // MAINWINDOW_H

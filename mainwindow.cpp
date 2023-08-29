@@ -8,6 +8,7 @@ MainWindow::MainWindow(QWidget *parent)
     setCentralWidget(new QWidget());
 
     memoryAllocation();
+//    validatorSetup();
 
     setLayout(main);
 
@@ -30,6 +31,11 @@ MainWindow::MainWindow(QWidget *parent)
     QObject::connect(selectFile, &QPushButton::clicked, this, &MainWindow::buttonClickFile);
     QObject::connect(getInformationProgramm, &QPushButton::clicked, this, &MainWindow::buttonClickInfomation);
 
+//    QObject::connect(leFileCount, &QLineEdit::editingFinished, this, &MainWindow::checkInput);
+//    QObject::connect(leWidth, &QLineEdit::editingFinished, this, &MainWindow::checkInput);
+//    QObject::connect(leDepth, &QLineEdit::editingFinished, this, &MainWindow::checkInput);
+
+
 }
 
 MainWindow::~MainWindow()
@@ -49,6 +55,7 @@ void MainWindow::memoryAllocation()
     converterTextToBinary= new QPushButton("Создание бинарного файла", this);
 
     conclusion = new QTextEdit(this);
+    conclusion->setReadOnly(true);
 
     labOptions = new QLabel("Options:", this);
     labFileСount = new QLabel("File count:",this);
@@ -59,16 +66,32 @@ void MainWindow::memoryAllocation()
     leWidth = new QLineEdit("8",this);
     leDepth = new QLineEdit("256",this);
 
+//    intValidFile = new QIntValidator(1, 8,this);
+//    intValidWidth = new QIntValidator(8, 32, this);
+//    intValidDepth = new QIntValidator(1, INT_MAX, this);
+
     converterForm = nullptr;
 }
 
+//void MainWindow::validatorSetup()
+//{
+//    leFileCount->setValidator(intValidFile);
+//    leWidth->setValidator(intValidWidth);
+//    leDepth->setValidator(intValidDepth);
+//}
+
+
 bool MainWindow::dataChecking()
 {
-    if ( ceil( log2( leFileCount->text().toInt() ) ) != floor( log2( leFileCount->text().toInt() ) ) )
+    if ( ceil( log2( leFileCount->text().toInt() ) ) != floor( log2( leFileCount->text().toInt() ) ) && ( leFileCount->text().toInt() < 1 || leFileCount->text().toInt() > 8) )
     {
         return false;
     }
-    if ( ceil( log2( leWidth->text().toInt() ) ) != floor( log2( leWidth->text().toInt() ) ) )
+    if ( ceil( log2( leWidth->text().toInt() ) ) != floor( log2( leWidth->text().toInt() ) ) && ( leWidth->text().toInt() < 8 || leWidth->text().toInt() > 32) )
+    {
+        return false;
+    }
+    if ( leDepth->text().toInt() < 1 )
     {
         return false;
     }
@@ -211,7 +234,6 @@ void MainWindow::buttonClickFile()
             msgBox.critical(0, "Произошла ошибка", "Выберите файл и нажмите открыть.");
         }
 
-
         mainFile.close();
 
     }
@@ -222,7 +244,6 @@ void MainWindow::buttonClickFile()
         buttonClickInfomation();
 
     }
-
 }
 
 void MainWindow::buttonClickInfomation()
@@ -235,10 +256,35 @@ void MainWindow::buttonClickInfomation()
 
 void MainWindow::buttonClickOpenConverterForm()
 {
-    if (converterForm == nullptr)
-    {
-        converterForm = new ConverterWindow(this);
-        converterForm->setAttribute(Qt::WA_DeleteOnClose); // Установим атрибут, чтобы объект формы удалился при закрытии
-    }
+    converterForm = new ConverterWindow(this);
+    converterForm->setAttribute(Qt::WA_DeleteOnClose); // Установим атрибут, чтобы объект формы удалился при закрытии
+
     converterForm->show();
 }
+
+//void  MainWindow::checkInput()
+//{
+//    int valueFile = leFileCount->text().toInt();
+//    if (valueFile < 1)
+//    {
+//        leFileCount->setText("1");
+//    }
+//    else if (valueFile > 8)
+//    {
+//        leFileCount->setText("8");
+//    }
+//    int valueWidth = leWidth->text().toInt();
+//    if (valueWidth < 8)
+//    {
+//        leWidth->setText("8");
+//    }
+//    else if (valueWidth > 32)
+//    {
+//        leWidth->setText("32");
+//    }
+//    int valueDepth = leDepth->text().toInt();
+//    if (valueDepth < 1)
+//    {
+//        leDepth->setText("1");
+//    }
+//}
