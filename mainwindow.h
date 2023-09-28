@@ -41,14 +41,13 @@ private:
     QGridLayout* layOptions;
 
     void memoryAllocation();
-    void validatorSetup();
-    bool dataChecking();
+    bool dataChecking() const;
 
     bool transformation(QFile &mainFile);
 
     QString pruningFileName(QFile &mainFile); //pruning - обрезка
-    void checkPosStream(QDataStream &dat_stream, int fileNumber);
-    void fileCompletion(QDataStream &dat_stream, QFile &intermediateFile, int fileNumber, bool &flag);
+    void checkPosStream(QDataStream &dat_stream, int fileNumber) const;
+    void fileCompletion(QDataStream &dat_stream, QFile &intermediateFile, int fileNumber, bool &flag) const;
 
     QLabel* labOptions;
     QLabel* labFileСount;
@@ -59,7 +58,7 @@ private:
 
 private slots:
     void buttonClickFile();
-    void buttonClickInfomation();
+    void buttonClickInfomation() const;
     void buttonClickOpenConverterForm();
 
 //    void checkInput();

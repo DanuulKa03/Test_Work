@@ -31,11 +31,6 @@ MainWindow::MainWindow(QWidget *parent)
     QObject::connect(selectFile, &QPushButton::clicked, this, &MainWindow::buttonClickFile);
     QObject::connect(getInformationProgramm, &QPushButton::clicked, this, &MainWindow::buttonClickInfomation);
 
-//    QObject::connect(leFileCount, &QLineEdit::editingFinished, this, &MainWindow::checkInput);
-//    QObject::connect(leWidth, &QLineEdit::editingFinished, this, &MainWindow::checkInput);
-//    QObject::connect(leDepth, &QLineEdit::editingFinished, this, &MainWindow::checkInput);
-
-
 }
 
 MainWindow::~MainWindow()
@@ -73,15 +68,7 @@ void MainWindow::memoryAllocation()
     converterForm = nullptr;
 }
 
-//void MainWindow::validatorSetup()
-//{
-//    leFileCount->setValidator(intValidFile);
-//    leWidth->setValidator(intValidWidth);
-//    leDepth->setValidator(intValidDepth);
-//}
-
-
-bool MainWindow::dataChecking()
+bool MainWindow::dataChecking() const
 {
     if ( ceil( log2( leFileCount->text().toInt() ) ) != floor( log2( leFileCount->text().toInt() ) ) && ( leFileCount->text().toInt() < 1 || leFileCount->text().toInt() > 8) )
     {
@@ -135,7 +122,7 @@ QString MainWindow::pruningFileName(QFile &mainFile) //pruning - обрезка
     }
 }
 
-void MainWindow::checkPosStream(QDataStream &dat_stream, int fileNumber)
+void MainWindow::checkPosStream(QDataStream &dat_stream, int fileNumber) const
 {
     if (dat_stream.device()->pos() != 0)
     {
@@ -147,7 +134,7 @@ void MainWindow::checkPosStream(QDataStream &dat_stream, int fileNumber)
     }
 }
 
-void MainWindow::fileCompletion(QDataStream &dat_stream, QFile &intermediateFile, int fileNumber, bool &flag)
+void MainWindow::fileCompletion(QDataStream &dat_stream, QFile &intermediateFile, int fileNumber, bool &flag) const
 {
 
     int widthBytes = leWidth->text().toInt() / 8;
@@ -246,7 +233,7 @@ void MainWindow::buttonClickFile()
     }
 }
 
-void MainWindow::buttonClickInfomation()
+void MainWindow::buttonClickInfomation() const
 {
     conclusion->append("Поддерживающие параметры преобразования:");
     conclusion->append(" - количество результирующих файлов(File count); допустимое значение - 1/2/4/8, по умолчанию - 1;");
@@ -261,30 +248,3 @@ void MainWindow::buttonClickOpenConverterForm()
 
     converterForm->show();
 }
-
-//void  MainWindow::checkInput()
-//{
-//    int valueFile = leFileCount->text().toInt();
-//    if (valueFile < 1)
-//    {
-//        leFileCount->setText("1");
-//    }
-//    else if (valueFile > 8)
-//    {
-//        leFileCount->setText("8");
-//    }
-//    int valueWidth = leWidth->text().toInt();
-//    if (valueWidth < 8)
-//    {
-//        leWidth->setText("8");
-//    }
-//    else if (valueWidth > 32)
-//    {
-//        leWidth->setText("32");
-//    }
-//    int valueDepth = leDepth->text().toInt();
-//    if (valueDepth < 1)
-//    {
-//        leDepth->setText("1");
-//    }
-//}
